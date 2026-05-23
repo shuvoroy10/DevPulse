@@ -1,11 +1,10 @@
-
 import { pool } from "../../db";
 import type { IIssues } from "./issues.interface";
 
-const createIssueIntoDB = async (payload: IIssues, userInfo:any) => {
-  const { title, description, type, status} = payload;
-  const {id}= userInfo
-  
+const createIssueIntoDB = async (payload: IIssues, userInfo: any) => {
+  const { title, description, type, status } = payload;
+  const { id } = userInfo;
+
   const result = await pool.query(
     `
         INSERT INTO issues(
@@ -39,7 +38,6 @@ const getSingleIssuefromDB = async (id: string) => {
   return result;
 };
 
-
 const updateIssueFromDB = async (
   payload: {
     title?: string;
@@ -47,12 +45,13 @@ const updateIssueFromDB = async (
     type?: "bug" | "feature_request";
   },
   id: string,
-  userInfo: any
+  userInfo: any,
 ) => {
   const { title, description, type } = payload;
 
   if (userInfo.role === "maintainer") {
-   const result = await pool.query(`
+    const result = await pool.query(
+      `
     UPDATE issues
       SET
         title = COALESCE($1, title),
@@ -60,13 +59,16 @@ const updateIssueFromDB = async (
         type = COALESCE($3, type)
       WHERE id = $4
       RETURNING *
-    `,[title, description, type, id])
+    `,
+      [title, description, type, id],
+    );
 
     return result;
   }
 
   if (userInfo.role === "contributor") {
-const result = await pool.query(`
+    const result = await pool.query(
+      `
   UPDATE issues
       SET
         title = COALESCE($1, title),
@@ -76,7 +78,9 @@ const result = await pool.query(`
       AND reporter_id = $5
       AND status = 'open'
       RETURNING *
-  `,[title, description, type, id, userInfo.id])
+  `,
+      [title, description, type, id, userInfo.id],
+    );
 
     return result;
   }
@@ -84,18 +88,20 @@ const result = await pool.query(`
   throw new Error("Unauthorized Role");
 };
 
-
-const deleteIssueFromDB = async(id: string)=>{
-   const result = await pool.query(`
+const deleteIssueFromDB = async (id: string) => {
+  const result = await pool.query(
+    `
       DELETE from issues WHERE id=$1
-      `,[id])
-      return result;
-}
+      `,
+    [id],
+  );
+  return result;
+};
 
 export const issuesService = {
   createIssueIntoDB,
   getAllIssueFromDB,
   getSingleIssuefromDB,
   updateIssueFromDB,
-  deleteIssueFromDB
+  deleteIssueFromDB,
 };
