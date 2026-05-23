@@ -7,3 +7,4 @@ export const issuesRoute = route;
 
 route.post('/', issuesController.createIssue)
 route.get('/', issuesController.getAllIssue)
+route.get('/:id',issuesController.getSingleIssue)
