@@ -6,3 +6,4 @@ const route = Router()
 export const issuesRoute = route;
 
 route.post('/', issuesController.createIssue)
+route.get('/', issuesController.getAllIssue)
