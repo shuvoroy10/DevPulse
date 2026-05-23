@@ -9,3 +9,5 @@ route.post('/', issuesController.createIssue)
 route.get('/', issuesController.getAllIssue)
 route.get('/:id',issuesController.getSingleIssue)
 route.patch('/:id',issuesController.updateIssue)
+route.delete('/:id', issuesController.deleteIssue)
+
