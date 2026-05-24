@@ -78,7 +78,7 @@ const updateIssue = async (req: Request, res: Response) => {
       req.user,
     );
     if (result.rows.length === 0) {
-      sendResponse(res, {
+     return sendResponse(res, {
         statusCode: 404,
         success: false,
         message: "Issue Not found in database",

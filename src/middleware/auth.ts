@@ -10,7 +10,7 @@ const auth = (...roles: Role[]) => {
    try {
      const token = req.headers.authorization;
     if(!token){
-        sendResponse(res,{
+       return sendResponse(res,{
             statusCode: 401,
             success: false,
             message:"Unauthorized Access!"
@@ -24,17 +24,17 @@ const auth = (...roles: Role[]) => {
 
     const user = userData.rows[0]
     if(userData.rows.length === 0){
-        sendResponse(res,{
+       return sendResponse(res,{
             statusCode: 404,
             success: false,
             message:"User Not Found!"
         })
     }
 if(roles.length && !roles.includes(user.role)){
-        sendResponse(res,{
-            statusCode: 404,
+      return sendResponse(res,{
+            statusCode: 403,
             success: false,
-            message:"contributor don't have acccess"
+            message:"You don't have acccess!!"
         })
 }
     req.user = decoded
