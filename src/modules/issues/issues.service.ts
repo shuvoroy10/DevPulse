@@ -1,4 +1,3 @@
-
 import { pool } from "../../db";
 import type { IQuery } from "../../type";
 import type { IIssues } from "./issues.interface";
@@ -6,7 +5,6 @@ import type { IIssues } from "./issues.interface";
 const createIssueIntoDB = async (payload: IIssues, userInfo: any) => {
   const { title, description, type, status } = payload;
   const { id } = userInfo;
-  console.log(userInfo)
   const result = await pool.query(
     `
         INSERT INTO issues(
@@ -25,11 +23,10 @@ const createIssueIntoDB = async (payload: IIssues, userInfo: any) => {
 
 const getAllIssueFromDB = async (query: IQuery) => {
   const { sort = "newest", type, status } = query;
-  
 
   const whereClauses: string[] = [];
   const queryValues: string[] = [];
-  
+
   if (type) {
     queryValues.push(type);
     whereClauses.push(`type = $${queryValues.length}`);
@@ -39,15 +36,11 @@ const getAllIssueFromDB = async (query: IQuery) => {
     queryValues.push(status);
     whereClauses.push(`status = $${queryValues.length}`);
   }
-console.log(whereClauses, queryValues)
 
-  const whereSql = whereClauses.length > 0 
-    ? `WHERE ${whereClauses.join(' AND ')}` 
-    : '';
-
+  const whereSql =
+    whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
   const orderDirection = sort === "oldest" ? "ASC" : "DESC";
-
 
   const issuesResult = await pool.query(
     `
@@ -55,12 +48,11 @@ console.log(whereClauses, queryValues)
     ${whereSql}
     ORDER BY created_at ${orderDirection}
     `,
-    queryValues
+    queryValues,
   );
-  
-  
+
   const issues = issuesResult.rows;
-  
+
   if (issues.length === 0) {
     return [];
   }
@@ -104,14 +96,40 @@ console.log(whereClauses, queryValues)
   return formattedIssues;
 };
 
-const getSingleIssuefromDB = async (id: string) => {
-  const result = await pool.query(
-    `
-          SELECT * FROM issues WHERE id=$1 
-            `,
-    [id],
+const getSingleIssuefromDB = async (IssueId: string) => {
+  const result = await pool.query(`SELECT * FROM issues WHERE id = $1`, [
+    IssueId,
+  ]);
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  const issue = result.rows[0];
+
+  const reporterRes = await pool.query(
+    `SELECT id, name, role FROM users WHERE id = $1`,
+    [issue.reporter_id],
   );
-  return result;
+
+  const reporter = reporterRes.rows[0] || null;
+
+  return {
+    id: issue.id,
+    title: issue.title,
+    description: issue.description,
+    type: issue.type,
+    status: issue.status,
+    reporter: reporter
+      ? {
+          id: reporter.id,
+          name: reporter.name,
+          role: reporter.role,
+        }
+      : null,
+    created_at: issue.created_at, // Added missing timestamps
+    updated_at: issue.updated_at,
+  };
 };
 
 const updateIssueFromDB = async (

@@ -44,17 +44,20 @@ const getSingleIssue = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await issuesService.getSingleIssuefromDB(id as string);
-    if (result.rows.length === 0) {
-      sendResponse(res, {
+
+    if (!result) {
+      return sendResponse(res, {
         statusCode: 404,
         success: false,
         message: "Issue Not Found",
       });
     }
+
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      data: result.rows[0],
+      message: "Issue retrieved successfully",
+      data: result,
     });
   } catch (error: any) {
     sendResponse(res, {
