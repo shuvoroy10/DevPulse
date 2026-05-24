@@ -9,7 +9,7 @@ export const issuesRoute = route;
 
 
 route.post('/',auth('contributor','maintainer'), issuesController.createIssue)
-route.get('/', auth(),issuesController.getAllIssue)
+route.get('/',issuesController.getAllIssue)
 route.get('/:id',issuesController.getSingleIssue)
 route.patch('/:id',auth('contributor','maintainer'),issuesController.updateIssue)
 route.delete('/:id',auth('maintainer'), issuesController.deleteIssue)

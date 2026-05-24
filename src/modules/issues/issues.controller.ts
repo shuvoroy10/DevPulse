@@ -8,7 +8,7 @@ const createIssue = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "User registered successfully",
+      message: "Issue created successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
@@ -23,11 +23,12 @@ const createIssue = async (req: Request, res: Response) => {
 
 const getAllIssue = async (req: Request, res: Response) => {
   try {
-    const result = await issuesService.getAllIssueFromDB();
+    const result = await issuesService.getAllIssueFromDB(req.query);
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      data: result.rows,
+      message: "Issues retrieved successfully",
+      data: result,
     });
   } catch (error: any) {
     sendResponse(res, {

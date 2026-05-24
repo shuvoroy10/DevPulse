@@ -5,3 +5,4 @@ export interface IIssues {
     status: 'open' | 'in_progress' | 'resolved';
     reporter_id: number;
 }
+
